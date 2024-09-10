@@ -7,8 +7,10 @@ import {
   TouchableOpacity,
   Button,
 } from "react-native";
+
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const { width, height } = Dimensions.get("window");
 
@@ -32,11 +34,11 @@ function WelcomeScreen() {
         />
       </TouchableOpacity>
 
-      <View style={styles.LoginRegisterButton}>
+      <SafeAreaView style={styles.LoginRegisterButton}>
         <View style={styles.loginButton}>
           <Button
             onPress={() => navigation.navigate("Login")}
-            title="Login"
+            title="Se connecter"
             color="black"
           />
         </View>
@@ -44,11 +46,11 @@ function WelcomeScreen() {
         <View style={styles.registerButton}>
           <Button
             onPress={() => navigation.navigate("Register")}
-            title="Register"
+            title="Créer un compte"
             color="black"
           />
         </View>
-      </View>
+      </SafeAreaView>
     </ImageBackground>
   );
 }
@@ -70,7 +72,7 @@ const styles = StyleSheet.create({
   },
 
   loginButton: {
-    backgroundColor: "#FFA69E",
+    backgroundColor: "#588B8B",
     borderRadius: 20,
     margin: 12,
     width: "100%",
@@ -86,11 +88,11 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: height * 0.07,
     right: width * 0.09,
-    color: "#C49799",
   },
 
   icon: {
     fontSize: 25,
+    color: "white",
   },
 });
 
