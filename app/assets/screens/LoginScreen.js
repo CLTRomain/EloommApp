@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -8,41 +8,114 @@ import {
   Alert,
 } from "react-native";
 
-function LoginScreen() {
-  const [EmailText, onChangeEmail] = React.useState("");
-  const [MotDePasseText, onChangeMDP] = React.useState("");
 
-  const trytolog = () => {
-    // Ici, vous pouvez ajouter votre logique pour traiter les valeurs
-    // Par exemple, vous pouvez afficher une alerte avec les valeurs pour tester
-    Alert.alert(
-      "Login Attempt",
-      `Email: ${EmailText}\nMot de Passe: ${MotDePasseText}`
+
+import {saveToken } from '../logic/ManageToken'; 
+
+
+
+
+
+
+
+
+
+function LoginScreen({ navigation }) {
+  const [emailText, setEmailText] = useState("");
+  const [motDePasseText, setMotDePasseText] = useState("");
+
+  const isFormValid = () => {
+    return (
+      emailText.length > 0 &&
+      motDePasseText.length > 0 
+
     );
-    // Vous pouvez aussi envoyer ces données à votre serveur ou les traiter autrement
+  };
+
+  function trytolog() {
+    if (emailText.includes("@") && emailText.includes(".")) {
+      tryToLogin();
+
+
+
+     
+    } else {
+      Alert.alert("", "l'email n'est pas correct");
+    }
+
+    return;
+  }
+
+ 
+    //Login with credential
+    const tryToLogin = async () => {
+      try {
+
+        //const JWTtoken = getValueToken('JWTtokenStore');
+
+      // console.log('Token:', JWTtoken);
+
+        const response = await fetch('http://localhost:8888/v1/login',{
+          method: 'POST',
+          headers: {         
+            'Content-Type': 'application/json',
+            //'Authorization': {JWTtoken},
+          },
+          
+          body: JSON.stringify({
+             email: emailText,
+             password: motDePasseText,
+          }),
+         
+        })
+        const data = await response.json();
+
+        if (response.ok) {
+          console.log('Response Data:', data); 
+          //deleteToken("JWTtokenStore")
+          console.log('Token:', JWTtoken);
+          const JWTtoken = data.TokenJWT;
+          await saveToken(JWTtoken);
+          navigation.navigate("Home");
+
+       
+
+          
+          //getValueToken('JWTtokenStore')
+
+        } else {
+          Alert.alert('Error', `Error  ${data.message}`);
+          console.log('Response Data:', data); 
+  
+        }
+      } catch (error) {
+        console.log(error.message);
+        Alert.alert('Erreur', `Erreur de connexion: ${error.message}`);
+      }
+
+
   };
 
   return (
     <SafeAreaView style={styles.form}>
       <TextInput
         style={styles.input}
-        autoCapitalize="none" // Empêche la majuscule automatique
-        autoCorrect={false} // Désactive la correction automatique
-        onChangeText={onChangeEmail}
+        autoCapitalize="none"
+        autoCorrect={false}
+        onChangeText={setEmailText}
         placeholder="Email"
-        value={EmailText}
+        value={emailText}
       />
       <TextInput
         style={styles.input}
         secureTextEntry={true}
-        onChangeText={onChangeMDP}
-        value={MotDePasseText}
+        onChangeText={setMotDePasseText}
+        value={motDePasseText}
         placeholder="Mot De Passe"
       />
-
       <TouchableOpacity
         style={styles.button}
-        onPress={trytolog} // renvoie vers fonction try to log avec mdp et email
+        onPress={trytolog}
       >
         <Text>Se connecter</Text>
       </TouchableOpacity>
@@ -61,13 +134,20 @@ const styles = StyleSheet.create({
     backgroundColor: "#DDDDDD",
     padding: 10,
     width: "60%",
-    borderRadius: "40%",
+    borderRadius: 5,
     alignItems: "center",
-    left: "17%",
     justifyContent: "center",
+    alignSelf: "center",
   },
   form: {
-    top: "40%",
+    flex: 1,
+    justifyContent: "center",
+    padding: 16,
+  },
+  apiMessage: {
+    marginTop: 20,
+    fontSize: 16,
+    textAlign: 'center',
   },
 });
 
